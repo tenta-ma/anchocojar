@@ -35,6 +35,20 @@
 	        <artifactId>commons-lang3</artifactId>
 	        <version>3.11</version>
 	    </dependency>
+
+        <dependency>
+            <groupId>io.lindstrom</groupId>
+            <artifactId>m3u8-parser</artifactId>
+            <version>0.19</version>
+        </dependency>
+
+        <dependency>
+            <groupId>it.sauronsoftware</groupId>
+            <artifactId>jave</artifactId>
+            <version>1.0.2</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/repositoty/it/sauronsoftware/jave/1.0.2/jave-1.0.2.jar</systemPath>
+        </dependency>
 	</dependencies>
 
     <build>
