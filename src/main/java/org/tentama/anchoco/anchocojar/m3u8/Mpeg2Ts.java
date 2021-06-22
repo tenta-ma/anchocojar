@@ -2,24 +2,27 @@ package org.tentama.anchoco.anchocojar.m3u8;
 
 import java.io.File;
 import java.math.BigDecimal;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 import lombok.extern.slf4j.Slf4j;
-import it.sauronsoftware.jave.AudioAttributes;
-import it.sauronsoftware.jave.AudioInfo;
-import it.sauronsoftware.jave.Encoder;
-import it.sauronsoftware.jave.EncoderException;
-import it.sauronsoftware.jave.EncodingAttributes;
-import it.sauronsoftware.jave.MultimediaInfo;
-import it.sauronsoftware.jave.VideoAttributes;
-import it.sauronsoftware.jave.VideoInfo;
-import it.sauronsoftware.jave.VideoSize;
+import ws.schild.jave.Encoder;
+import ws.schild.jave.EncoderException;
+import ws.schild.jave.InputFormatException;
+import ws.schild.jave.MultimediaObject;
+import ws.schild.jave.encode.AudioAttributes;
+import ws.schild.jave.encode.EncodingAttributes;
+import ws.schild.jave.encode.VideoAttributes;
+import ws.schild.jave.info.AudioInfo;
+import ws.schild.jave.info.MultimediaInfo;
+import ws.schild.jave.info.VideoInfo;
+import ws.schild.jave.info.VideoSize;
 
 /**
  * 動画変換を行う
  *
- * @see it.sauronsoftware.jave
+ * @see ws.schild.jave jave2
  */
 @Slf4j
 public class Mpeg2Ts {
@@ -33,8 +36,8 @@ public class Mpeg2Ts {
     /** mpeg2tsで利用される標準的な音声コーデック(aac) */
     private static final String audioCodec = "aac";
 
-    /** mpeg2tsで利用される標準的な動画コーデック(MPEG-2 Video) */
-    private static final String videoCodec = "mpeg2video";
+    /** mp4で利用される標準的な動画コーデック(MPEG-2 Video) */
+    private static final String videoCodec = "libx264";
 
     /** コンストラクタ */
     public Mpeg2Ts() {
@@ -51,13 +54,14 @@ public class Mpeg2Ts {
         log.info("start.");
 
         try {
-
             // file
             URL sourceFile = Mpeg2Ts.class.getClassLoader().getResource("movie/source/sample60s.mp4");
             log.debug(sourceFile.toURI().toString());
             File movieFile = Paths.get(sourceFile.toURI()).toFile();
 
-            MultimediaInfo mediaInfo = encoder.getInfo(movieFile);
+            MultimediaObject mediaObject = new MultimediaObject(movieFile);
+            MultimediaInfo mediaInfo = mediaObject.getInfo();
+
             // ミリ秒で取れる(60秒の動画であれば60000s)
             log.debug("duration : {}", mediaInfo.getDuration());
             log.debug("format : {}", mediaInfo.getFormat());
@@ -66,14 +70,6 @@ public class Mpeg2Ts {
             EncodingAttributes attrs = new EncodingAttributes();
             // 動画秒数
             attrs.setDuration(duration);
-
-            // 有効な動画エンコーダー
-            // Arrays.stream(encoder.getVideoEncoders()).forEach(log::debug);
-            // 有効な動画フォーマット一覧
-            // Arrays.stream(encoder.getSupportedEncodingFormats()).forEach(log::debug);
-
-            // 動画圧縮変換時フォーマット
-            attrs.setFormat("mpegts");
 
             // 音声の変換情報を設定
             attrs.setAudioAttributes(createAudioAttributes(mediaInfo));
@@ -92,7 +88,7 @@ public class Mpeg2Ts {
                 // 指定ファイル名_index.tsで作成
                 File dest = new File("C:/user/movie/sample60s/dest60s_" + fileIndex.getAndIncrement() + ".ts");
 
-                encoder.encode(movieFile, dest, attrs);
+                encoder.encode(mediaObject, dest, attrs);
 
                 // 変換結果を検証
                 if (!dest.exists() || dest.length() == 0) {
@@ -105,10 +101,12 @@ public class Mpeg2Ts {
                 // offsetが動画開始秒 > 動画長になるまで繰り返し
             } while (movieOffsetSecond.compareTo(movieDurationSecond) < 0);
 
+        } catch (URISyntaxException e) {
+            log.error("ファイルが見つからない", e);
+        } catch (InputFormatException e) {
+            log.error("適切な動画でない？", e);
         } catch (EncoderException e) {
-            log.error("Occured EncoderException.", e);
-        } catch (Exception e) {
-            log.error("Occured Exception.", e);
+            log.error("encodeに失敗", e);
         } finally {
             log.info("end.");
         }

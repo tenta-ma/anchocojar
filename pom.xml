@@ -43,11 +43,9 @@
         </dependency>
 
         <dependency>
-            <groupId>it.sauronsoftware</groupId>
-            <artifactId>jave</artifactId>
-            <version>1.0.2</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/repositoty/it/sauronsoftware/jave/1.0.2/jave-1.0.2.jar</systemPath>
+            <groupId>ws.schild</groupId>
+            <artifactId>jave-all-deps</artifactId>
+            <version>3.1.1</version>
         </dependency>
 	</dependencies>
 
