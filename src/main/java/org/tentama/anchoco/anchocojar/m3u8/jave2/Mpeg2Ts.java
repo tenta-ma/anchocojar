@@ -1,4 +1,4 @@
-package org.tentama.anchoco.anchocojar.m3u8;
+package org.tentama.anchoco.anchocojar.m3u8.jave2;
 
 import java.io.File;
 import java.math.BigDecimal;

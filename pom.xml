@@ -9,6 +9,8 @@
     <properties>
     	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>11</java.version>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven-checkstyle-plugin.version>3.1.2</maven-checkstyle-plugin.version>
         <spotbugs-maven-plugin.version>4.2.0</spotbugs-maven-plugin.version>
     </properties>
@@ -47,8 +49,22 @@
             <artifactId>jave-all-deps</artifactId>
             <version>3.1.1</version>
         </dependency>
-	</dependencies>
 
+<dependency>
+    <groupId>org.bytedeco</groupId>
+    <artifactId>javacv-platform</artifactId>
+    <version>1.5.5</version>
+  </dependency>
+<!-- https://mvnrepository.com/artifact/org.bytedeco.javacpp-presets/ffmpeg -->
+        <!-- Optional GPL builds with (almost) everything enabled -->
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>ffmpeg-platform-gpl</artifactId>
+            <version>4.3.2-1.5.5</version>
+        </dependency>
+
+
+</dependencies>
     <build>
         <plugins>
             <plugin>
